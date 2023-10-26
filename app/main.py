@@ -14,7 +14,7 @@ def register(user: User):
     if "@" not in user.email or ".com" not in user.email:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE)
     db.append(user)
-    return user.username, db
+    return user.username, user.email
 
 
 @app.post("/auth/login")
