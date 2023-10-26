@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, status
-from models.models import User
+/from models.models import User, ToLogin
 
 app = FastAPI()
 
@@ -15,3 +15,15 @@ def register(user: User):
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE)
     db.append(user)
     return user.username, db
+
+
+@app.post("/auth/login")
+def login(user_auth: ToLogin):
+    for existing_user in db:
+        if user_auth.login == existing_user.username or user_auth.login == existing_user.email:
+            if user_auth.password == existing_user.password:
+                return existing_user.username, existing_user.email
+
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
