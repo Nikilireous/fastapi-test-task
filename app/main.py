@@ -27,3 +27,16 @@ def login(user_auth: ToLogin):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+
+@app.get("/users")
+def get_users(page: int | None = None, limit: int | None = None):
+    users = db
+
+    if page is not None and limit is not None:
+        users = db[(page - 1) * limit: page * limit]
+
+    return list(map(
+        lambda user: {"username": user.username, "email": user.email},
+        users
+    ))
