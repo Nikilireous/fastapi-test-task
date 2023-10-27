@@ -10,3 +10,8 @@ class User(BaseModel):
 class ToLogin(BaseModel):
     login: str
     password: str
+
+
+class ToGetUsers(BaseModel):
+    page: int
+    limit: int
