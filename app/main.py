@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, status
-/from models.models import User, ToLogin
+from app.models.models import User, ToLogin
 
 app = FastAPI()
 
