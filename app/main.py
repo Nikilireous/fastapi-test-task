@@ -18,8 +18,7 @@ def register(user: User):
     for existing_user in db:
         if user.username == existing_user.username or user.email == existing_user.email:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT)
-    if "@" not in user.email or ".com" not in user.email:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE)
+
     db.append(user)
     return {"username": user.username, "email": user.email}
 
