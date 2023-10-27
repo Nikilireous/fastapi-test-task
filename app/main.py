@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, status
 from app.models.models import User, ToLogin
 from email_validator import validate_email, EmailNotValidError
+from bcrypt import hashpw, checkpw, gensalt
 
 app = FastAPI()
 
@@ -19,6 +20,8 @@ def register(user: User):
         if user.username == existing_user.username or user.email == existing_user.email:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT)
 
+    user.password = str(hashpw(bytes(user.password, "UTF8"), gensalt()), "UTF8")
+
     db.append(user)
     return {"username": user.username, "email": user.email}
 
@@ -27,7 +30,7 @@ def register(user: User):
 def login(user_auth: ToLogin):
     for existing_user in db:
         if user_auth.login == existing_user.username or user_auth.login == existing_user.email:
-            if user_auth.password == existing_user.password:
+            if checkpw(bytes(user_auth.password, "UTF8"), bytes(existing_user.password, "UTF8")):
                 return {"username": existing_user.username, "email": existing_user.email}
 
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
