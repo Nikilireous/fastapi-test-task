@@ -9,7 +9,7 @@ db: list[User] = []
 
 
 @app.post("/auth/register")
-def register(user: User):
+async def register(user: User):
     try:
         emailinfo = validate_email(user.email, check_deliverability=False)
         user.email = emailinfo.normalized
@@ -27,7 +27,7 @@ def register(user: User):
 
 
 @app.post("/auth/login")
-def login(user_auth: ToLogin):
+async def login(user_auth: ToLogin):
     for existing_user in db:
         if user_auth.login == existing_user.username or user_auth.login == existing_user.email:
             if checkpw(bytes(user_auth.password, "UTF8"), bytes(existing_user.password, "UTF8")):
@@ -39,7 +39,7 @@ def login(user_auth: ToLogin):
 
 
 @app.get("/users")
-def get_users(page: int | None = None, limit: int | None = None):
+async def get_users(page: int | None = None, limit: int | None = None):
     users = db
 
     if page is not None and limit is not None:
