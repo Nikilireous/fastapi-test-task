@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, status
 from app.models.models import User, ToLogin
+from email_validator import validate_email, EmailNotValidError
 
 app = FastAPI()
 
@@ -8,6 +9,12 @@ db: list[User] = []
 
 @app.post("/auth/register")
 def register(user: User):
+    try:
+        emailinfo = validate_email(user.email, check_deliverability=False)
+        user.email = emailinfo.normalized
+    except EmailNotValidError as error:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
+
     for existing_user in db:
         if user.username == existing_user.username or user.email == existing_user.email:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT)
